@@ -1,6 +1,8 @@
 let controller;
 let graphicController;
 
+
+// Player creation factory function
 function createPlayer(type, name) {
     const mark = type;
     const playerName = name;
@@ -11,6 +13,7 @@ function createPlayer(type, name) {
     return { mark, playerName, getWins, giveWins };
 }
 
+// Game controller factory function
 function GameController (p1, p2) {
     const player1 = createPlayer('X', p1);
     const player2 = createPlayer('O', p2);
@@ -121,9 +124,15 @@ function GameController (p1, p2) {
         return { X: player1.playerName, O: player2.playerName }    
     }
 
-    return { playRound, getTable, checkGameState, restartGame, getScores, getNames };
+    const getActivePlayerMarker = () => {
+        return activePlayer.mark; 
+    }
+
+    return { playRound, getTable, checkGameState, restartGame, getScores, getNames, getActivePlayerMarker };
 }
 
+
+// The welcome form initializes the game...
 const welcomeForm = document.getElementById('welcome-form');
 
 welcomeForm.addEventListener('submit', (e) => {
@@ -137,7 +146,7 @@ welcomeForm.addEventListener('submit', (e) => {
     graphicController.setInvisible();
 });
 
-
+// Graphic interface factory function
 const graphicInterface = () => {
     const resetGame = (gameState) => {
         if(gameState){
@@ -155,6 +164,7 @@ const graphicInterface = () => {
                 controller.restartGame();
                 cleanTable();
                 removeResetButton();
+                removeSquarePaint();
             });
 
         }
@@ -200,7 +210,23 @@ const graphicInterface = () => {
         welcomeFormElement.classList.add('invisible');
     }
 
-    return { resetGame, displayWins, setNames, setInvisible };
+    const paintSquares = (square) => {
+        const currentPlayerMark = controller.getActivePlayerMarker();
+        if(square.classList.contains('player-X') || square.classList.contains('player-O')){
+            return;
+        }
+        
+        square.classList.add(`player-${currentPlayerMark}`);
+    }
+
+    const removeSquarePaint = () => {
+        squares.forEach(square => {
+            square.classList.remove('player-X');
+            square.classList.remove('player-O');
+        })
+    }
+
+    return { resetGame, displayWins, setNames, setInvisible, paintSquares };
 }
 
 
@@ -211,12 +237,12 @@ squares.forEach(square => {
         const table = controller.getTable();
         let gameState = controller.checkGameState();
         let scores = controller.getScores();
-        
         if(gameState){
             graphicController.resetGame(gameState);
             graphicController.displayWins(scores.X, scores.O);
             return;
         } else {
+            graphicController.paintSquares(square);
             controller.playRound(Number(square.id[0]), Number(square.id[2]));
             square.textContent = table[square.id[0]][square.id[2]];
             gameState = controller.checkGameState();

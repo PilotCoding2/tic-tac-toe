@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&family=Archivo+Black&display=swap');
+
+:root{
+    --x-player: #1B4DE4;
+    --o-player: #E63329;
+    --buttons-background: #FFC400;
+    --background-color: #F4F2ED;
+    --text-color: #000000;
+    --text-font: 'Archivo', Arial, sans-serif;
+}
+
 *{
     margin: 0;
     padding: 0;
@@ -9,26 +20,67 @@ body{
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    min-width: 100vw;
     justify-content: center;
+    font-family: var(--text-font);
+    background-color: var(--background-color);
 }
 
 #players-container{
     display: grid;
-    grid-template-columns: repeat(2, 100px);
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 200px;
     
+}
+
+#player-one, #player-two{
+    text-align: center;
+}
+
+.player-one-name{
+    background-color: var(--x-player);
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
+.player-two-name{
+    background-color: var(--o-player);
+    
+}
+
+.player-one-name, .player-two-name{
+    padding: 5px;
+    margin-bottom: 5px;
+    color: white;
+    font-weight: 600;
 }
 
 #welcome-form{
     display: grid;
     grid-template-columns: repeat(2, 250px);
     column-gap: 10px;
-    width: 550px;
     padding: 20px;
-    border: 2px solid black;
-    border-radius: 6px;
+    border: 6px solid black;
+    border-radius: 0px;
     justify-content: center;
     align-content: center;
-    
+    background-color: var(--background-color);
+}
+
+@media (max-width: 600px){
+    #welcome-form{
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        justify-content: center;
+        align-content: center;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
 }
 
 .game-title{
@@ -38,7 +90,22 @@ body{
 
 #welcome-form h1{
     text-align: center;
-    
+    font-weight: 600;
+}
+
+#welcome-form label{
+    font-weight: 400;
+}
+
+#welcome-form input{
+    border: 4px solid black;
+}
+
+#play-btn{
+    font-family: var(--text-font);
+    font-size: 20px;
+    font-weight: 600;
+    background-color: var(--buttons-background);
 }
 
 #player-one-form, #player-two-form{
@@ -50,6 +117,12 @@ body{
 #player-one-name, #player-two-name{
     padding: 5px;
     margin-top: 10px;
+}
+
+#player-one h3, #player-two h3{
+    margin-top: 10px;
+    font-size: 30px;
+    font-weight: 600;
 }
 
 .btn-container{
@@ -66,19 +139,44 @@ body{
 
 #table{
     display: grid;
-    grid-template-columns: repeat(3, 50px);
-
+    grid-template-columns: repeat(3, 100px);
+    background-color: var(--text-color);
+    gap: 4px;
+    padding: 4px;
 }
 
 .square{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    border: 2px solid black;
+    width: 100px;
+    height: 100px;
+    border: 0;
+    background: var(--background-color);
+    font-size: 50px;
+    color: white;
+    font-weight: 800;
+}
+
+.player-X{
+    background-color: var(--x-player);
+}
+
+.player-O{
+    background-color: var(--o-player);
 }
 
 #table.invisible, #players-container.invisible, #welcome-form.invisible{
     display: none;
+}
+
+.reset-btn{
+    background-color: var(--buttons-background);
+    font-family: var(--text-font);
+    font-weight: 800;
+    font-size: 20px;
+    border: 4px solid black;
+    border-radius: 0px;
+    padding: 10px;
+    margin-top: 20px;
 }
