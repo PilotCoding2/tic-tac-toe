@@ -1,15 +1,19 @@
-function createPlayer(type) {
+let controller;
+let graphicController;
+
+function createPlayer(type, name) {
     const mark = type;
+    const playerName = name;
     let wins = 0;
     const getWins = () => wins;
     const giveWins = () => { wins++; };
 
-    return { mark, getWins, giveWins};
+    return { mark, playerName, getWins, giveWins };
 }
 
-function GameController () {
-    const player1 = createPlayer('X');
-    const player2 = createPlayer('O');
+function GameController (p1, p2) {
+    const player1 = createPlayer('X', p1);
+    const player2 = createPlayer('O', p2);
     const players = [player1, player2];
     let activePlayer = players[0];
     let gameState = false;
@@ -38,7 +42,7 @@ function GameController () {
         const diagWin = checkDiagonalWin();
 
         if(columnWin.win|| rowWin.win || diagWin.win){
-            players[1].giveWins();
+            activePlayer.giveWins();
             gameState = true;
             return;
         } else if(!columnWin.win && !rowWin.win && !diagWin.win && isGameTied()){
@@ -109,12 +113,29 @@ function GameController () {
         return table;
     }
 
-    return { playRound, getTable, checkGameState, restartGame };
+    const getScores = () => {
+        return { X: player1.getWins(), O: player2.getWins() }
+    }
+
+    const getNames = () => {
+        return { X: player1.playerName, O: player2.playerName }    
+    }
+
+    return { playRound, getTable, checkGameState, restartGame, getScores, getNames };
 }
 
-const controller = GameController();
+const welcomeForm = document.getElementById('welcome-form');
 
-const squares = document.querySelectorAll('.square');
+welcomeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const player1Name = document.getElementById('player-one-name');
+    const player2Name = document.getElementById('player-two-name');
+    controller = GameController(player1Name.value, player2Name.value);
+    graphicController = graphicInterface();
+    const names = controller.getNames();
+    graphicController.setNames(names.X, names.O);
+    graphicController.setInvisible();
+});
 
 
 const graphicInterface = () => {
@@ -133,6 +154,7 @@ const graphicInterface = () => {
             resetButton.addEventListener('click', () => {
                 controller.restartGame();
                 cleanTable();
+                removeResetButton();
             });
 
         }
@@ -143,25 +165,71 @@ const graphicInterface = () => {
         });
     }
 
-    return { resetGame };
+    const removeResetButton = () => {
+        const buttonToRemove = document.querySelector('body > .reset-btn');
+        if(buttonToRemove){
+            buttonToRemove.remove();
+        }
+    }
+
+    const displayWins = (player1, player2) => {
+        const player1Score = document.querySelector('#player-one-score');
+        const player2Score = document.querySelector('#player-two-score');
+
+        player1Score.innerText = player1;
+        player2Score.innerText = player2;
+    }
+
+    const setNames = (p1, p2) => {  
+        const player1Name = document.querySelector('.player-one-name');
+        const player2Name = document.querySelector('.player-two-name');
+        player1Name.textContent = p1;
+        player2Name.textContent = p2;
+    }
+    
+    const setInvisible = () => {
+        const tableElement = document.getElementById('table');
+        const welcomeFormElement = document.getElementById('welcome-form');
+        const playersContainereElement = document.getElementById('players-container');
+
+        // We remove the invisible class from this ones
+        tableElement.classList.remove('invisible');
+        playersContainereElement.classList.remove('invisible');
+
+        // We add the invisible class to the welcome form
+        welcomeFormElement.classList.add('invisible');
+    }
+
+    return { resetGame, displayWins, setNames, setInvisible };
 }
 
-const graphicController = graphicInterface();
+
+const squares = document.querySelectorAll('.square');
 
 squares.forEach(square => {
     square.addEventListener('click', () => {
         const table = controller.getTable();
         let gameState = controller.checkGameState();
+        let scores = controller.getScores();
         
         if(gameState){
             graphicController.resetGame(gameState);
+            graphicController.displayWins(scores.X, scores.O);
             return;
         } else {
             controller.playRound(Number(square.id[0]), Number(square.id[2]));
             square.textContent = table[square.id[0]][square.id[2]];
+            gameState = controller.checkGameState();
+            scores = controller.getScores();
+            if(gameState){
+                graphicController.resetGame(gameState);
+                graphicController.displayWins(scores.X, scores.O);
+                return;
+            }
         }
     });
 });
+
 
 
 
